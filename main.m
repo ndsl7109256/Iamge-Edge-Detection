@@ -3,7 +3,9 @@ clear;
 sss=[1 2 3];
 sum(sss)
 
-GIm=imread('123.png');
+% GIm=imread('spider.png');
+ GIm=imread('plane.jpg');
+% GIm=imread('123.png');
 
 GIm=rgb2gray(GIm);
 
@@ -30,17 +32,13 @@ for x = 1 : r
     end
 end
 figure, imshow(I);
-title('noise');
+title('original');
 figure, imshow(uint8(B));
-title('solved');
+title('noise solved');
  GIm = I;
 
 numofpixels=size(GIm,1)*size(GIm,2);
 
-
-figure,imshow(GIm);
-
-title('Original Image');
 
 HIm=uint8(zeros(size(GIm,1),size(GIm,2)));
 
@@ -98,8 +96,11 @@ for i=1:size(GIm,1)
 
     for j=1:size(GIm,2)
 
-            HIm(i,j)=output(GIm(i,j)+1);
-
+            if (GIm(i,j)-20 > 0)
+                HIm(i,j)=output(GIm(i,j)-20);            
+            else
+                HIm(i,j)=output(1);
+            end
     end
 
 end
@@ -115,7 +116,7 @@ title('Histogram equalization');
 i = 0;
 j = 0;
 k = 0;
-
+sobel_threshold = 60;
 X= double(HIm); 
 height = size(X, 1); 
 width = size(X, 2); 
@@ -123,8 +124,8 @@ channel = size(X, 3);
 lenaOutput = X;
 Gx = [1 2 1; 0 0 0; -1 -2 -1];
 Gy = Gx';
-for i = 2 : height-1
-   for j = 2 : width-1        
+for i = 2 : height-1;
+   for j = 2 : width-1;        
            tempLena = X(i - 1 : i + 1, j - 1 : j + 1);
            aa = Gx.*tempLena;
            xx = 0;
@@ -140,8 +141,11 @@ for i = 2 : height-1
            end
            pixValue =sqrt(xx.^2+ yy.^2);
           % pixValue =(x-y);
-           lenaOutput(i, j) = pixValue;
+           if(pixValue >= sobel_threshold)               
+                lenaOutput(i, j) = pixValue;
+           else
+               lenaOutput(i, j) = 0;
+           end
    end
 end
-lenaOutput = uint8(lenaOutput); figure; imshow(abs(lenaOutput),[]); title(' Sobel Edge Detection');
-
+lenaOutput = uint8(lenaOutput); figure; imshow(abs(lenaOutput),[]); title(' Sobel Edge Detection-30');
