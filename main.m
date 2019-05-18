@@ -1,6 +1,39 @@
+clear;
+
+sss=[1 2 3];
+sum(sss)
+
 GIm=imread('123.png');
 
 GIm=rgb2gray(GIm);
+
+%I = imnoise(GIm, 'salt & pepper', 0.01);
+% median filtering
+I = GIm;
+[r c] = size(I);
+Rep = zeros(r + 2, c + 2);
+for x = 2 : r + 1
+    for y = 2 : c + 1
+        Rep(x,y) = I(x - 1, y - 1);
+    end
+end
+B = zeros(r, c);
+for x = 1 : r
+    for y = 1 : c
+        for i = 1 : 3
+            for j = 1 : 3
+                q = x - 1;     w = y -1;
+                array((i - 1) * 3 + j) = Rep(i + q, j + w);
+            end
+        end
+        B(x, y) = median(array(:));
+    end
+end
+figure, imshow(I);
+title('noise');
+figure, imshow(uint8(B));
+title('solved');
+ GIm = I;
 
 numofpixels=size(GIm,1)*size(GIm,2);
 
@@ -74,33 +107,41 @@ end
 figure,imshow(HIm);
 
 title('Histogram equalization');
- 
-BW1 = edge(GIm,'Sobel')'
-figure,imshow(BW1);
-title('Sobel');
 
-BW2 = edge(GIm,'Canny');
-figure,imshow(BW2);
-title('Canny');
 
-BW3 = edge(GIm,'Prewitt');
-figure,imshow(BW3);
-title('Prewitt');
+% A=imread('plane.jpg');
+% B=rgb2gray(A);
+% C=double(B);
+i = 0;
+j = 0;
+k = 0;
 
-BW4 = edge(GIm,'Roberts');
-figure,imshow(BW4);
-title('Roberts');
-
-BW5 = edge(GIm,'log');
-figure,imshow(BW5);
-title('log');
-
-BW6 = edge(GIm,'zerocross');
-figure,imshow(BW6);
-title('zerocross');
-
-BW7 = edge(GIm,'approxcanny');
-figure,imshow(BW7);
-title('approxcanny');
-%The result is shown in the form of a table
+X= double(HIm); 
+height = size(X, 1); 
+width = size(X, 2); 
+channel = size(X, 3);
+lenaOutput = X;
+Gx = [1 2 1; 0 0 0; -1 -2 -1];
+Gy = Gx';
+for i = 2 : height-1
+   for j = 2 : width-1        
+           tempLena = X(i - 1 : i + 1, j - 1 : j + 1);
+           aa = Gx.*tempLena;
+           xx = 0;
+           v= aa(:);
+           for k =1:9
+           xx = xx + v(k);          
+           end
+           bb= Gy.*tempLena;
+           yy = 0;
+           v= bb(:);
+           for k =1:9
+           yy = yy + v(k);          
+           end
+           pixValue =sqrt(xx.^2+ yy.^2);
+          % pixValue =(x-y);
+           lenaOutput(i, j) = pixValue;
+   end
+end
+lenaOutput = uint8(lenaOutput); figure; imshow(abs(lenaOutput),[]); title(' Sobel Edge Detection');
 
